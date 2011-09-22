@@ -20,7 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.filechooser.*;
+import javax.swing.JSlider;
 
 
 class to_save implements Serializable{
@@ -53,12 +53,14 @@ public class GOFrame extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	
+	
 	Thread t;
 	JButton bplay,breset,bnext,bsave,bopen;
 	JButton[][] mat;
 	boolean[][] old_mat;
 	JPanel panel,p,pt;
 	final int dim = 30;
+	
 	JLabel task = new JLabel();
 	ImageIcon implay = new ImageIcon("image/media-playback-start.png"); 
 	ImageIcon impause = new ImageIcon("image/media-playback-pause.png"); 
@@ -70,9 +72,16 @@ public class GOFrame extends JFrame
 	ImageIcon imopen = new ImageIcon("image/document-open.png");
 	int vive =0;
 	int periodo =0;
-	
+	static final int RPS_MIN = 50;
+	static final int RPS_MAX = 500;
+	static final int RPS_INIT = 150;    //initial frames per second
+
+	JSlider sleep;
+
+
 	public GOFrame()
 	{
+		
 		setLayout(new BorderLayout());
 		setTitle("Game Of Life");
 		setSize(800,600);
@@ -81,8 +90,19 @@ public class GOFrame extends JFrame
 		panel = new JPanel();
 		panel.setLayout( new GridLayout(dim,dim) );
 		p = new JPanel();
-		pt = new JPanel();
+		p.setLayout(new GridLayout(1,5));
+		pt = new JPanel(new BorderLayout());
 		mat = new JButton[dim][dim];
+		
+		
+		sleep = new JSlider(JSlider.HORIZONTAL,
+	            RPS_MIN, RPS_MAX, RPS_INIT);
+
+		//Turn on labels at major tick marks.
+		sleep.setMajorTickSpacing(100);
+		sleep.setMinorTickSpacing(1);
+		sleep.setPaintTicks(true);
+		sleep.setPaintLabels(true);
 		
 		for(int i=0; i<dim;i++)
 			for(int j=0;j<dim;j++)
@@ -163,6 +183,7 @@ public class GOFrame extends JFrame
 		task.setText(" vive: "+vive+"     morte: "+(dim*dim-vive)+"     periodo: "+periodo);
 		//task.setAlignmentY(Component.LEFT_ALIGNMENT);
 		pt.add(task);
+		pt.add(sleep,BorderLayout.EAST);
 		bsave = new JButton(imsave);
 		bsave.setBackground(Color.WHITE);
 	//	bsave.setPreferredSize(new Dimension(45,45));
@@ -284,7 +305,7 @@ public class GOFrame extends JFrame
 		}
 		
 	}
-	
+
 	public void centerFrame()
 	{
 		Dimension screenSize = Toolkit.getDefaultToolkit ().getScreenSize ();
@@ -332,14 +353,12 @@ public class GOFrame extends JFrame
 			{
 				
 				if ( !mat[i][j].isSelected() && (Adiacenze(old_mat,i,j) == 3) ){
-					System.out.println("è nata  :)  i,j "+i+","+j);
 					mat[i][j].setSelected(true);
 					mat[i][j].setBackground(Color.RED);
 					vive++;
 				}
 				else if ( mat[i][j].isSelected() &&( Adiacenze(old_mat,i,j)<2 || Adiacenze(old_mat,i,j)>3 ) )
 				{
-					System.out.println("è morta :(  i,j "+i+","+j);
 
 					mat[i][j].setSelected(false);
 					mat[i][j].setBackground(Color.WHITE);
@@ -362,7 +381,7 @@ public class GOFrame extends JFrame
 			while(true){
 				prossimo_periodo();			
 				try {
-					Thread.sleep(100);
+					Thread.sleep(sleep.getValue());
 				} catch (InterruptedException e) {
 					break;
 				}
