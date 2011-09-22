@@ -17,6 +17,7 @@ import java.io.Serializable;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -77,7 +78,7 @@ public class GOFrame extends JFrame
 	static final int RPS_INIT = 150;    //initial frames per second
 
 	JSlider sleep;
-
+	JCheckBox toroButton;
 
 	public GOFrame()
 	{
@@ -93,6 +94,8 @@ public class GOFrame extends JFrame
 		p.setLayout(new GridLayout(1,5));
 		pt = new JPanel(new BorderLayout());
 		mat = new JButton[dim][dim];
+		
+		 toroButton = new JCheckBox("toroidale");
 		
 		
 		sleep = new JSlider(JSlider.HORIZONTAL,
@@ -183,6 +186,7 @@ public class GOFrame extends JFrame
 		task.setText(" vive: "+vive+"     morte: "+(dim*dim-vive)+"     periodo: "+periodo);
 		//task.setAlignmentY(Component.LEFT_ALIGNMENT);
 		pt.add(task);
+		pt.add(toroButton,BorderLayout.PAGE_END);
 		pt.add(sleep,BorderLayout.EAST);
 		bsave = new JButton(imsave);
 		bsave.setBackground(Color.WHITE);
@@ -327,9 +331,18 @@ public class GOFrame extends JFrame
 		for(int x = i-1; x < i +2 ;x++){
 			for(int y = j-1; y < j +2 ;y++){
 				if(x != i || y != j){
-					if(old_mat2[realPos(x)][realPos(y)]){
-						ris++;
+					if(toroButton.isSelected()){
+						if(old_mat2[realPos(x)][realPos(y)]){
+							ris++;
+						}	
 					}
+					else{
+						if(x>=0 && y >=0 && x < dim && y < dim)
+						if(old_mat2[x][y]){
+							ris++;
+						}
+					}
+									
 				}
 				
 			}
