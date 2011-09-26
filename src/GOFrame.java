@@ -77,7 +77,7 @@ public class GOFrame extends JFrame
 
 	boolean[][] old_mat;
 	JPanel panel,p,pt;
-	final int dim = 12;
+	final int dim = 24;
 	
 	JLabel task = new JLabel();
 	ImageIcon implay = new ImageIcon("image/media-playback-start.png"); 
@@ -94,7 +94,9 @@ public class GOFrame extends JFrame
 	static final int RPS_MAX = 500;
 	static final int RPS_INIT = 150;    //initial frames per second
 	
-	private Color buttoncolor  = new Color(00, 255, 0);
+	private Color buttoncolor  = new Color(255, 0, 0);
+	private boolean selectedcolor = true;
+	private int colorand = 0;
 	static final Color buttonbkg  = new Color(2,2,2);
 	static final Color windbkg  = new Color(2,2,2);
 
@@ -251,6 +253,7 @@ public class GOFrame extends JFrame
 
 			public void stateChanged(ChangeEvent e) {
 			    buttoncolor = tcc.getColor();
+			    selectedcolor = true;
 			}
 			
 		});
@@ -399,7 +402,7 @@ public class GOFrame extends JFrame
 
 				((JButton)e.getSource()).setSelected(true);
 
-				((JButton)e.getSource()).setBackground(buttoncolor);
+				((JButton)e.getSource()).setBackground(getNextColor());
 				vive++;
 				task.setText(" vive: "+vive+"     morte: "+(dim*dim-vive)+"     periodo: "+periodo);
 			}
@@ -483,7 +486,8 @@ public class GOFrame extends JFrame
 				
 				if ( !mat[i][j].isSelected() && (Adiacenze(old_mat,i,j) == 3) ){
 					mat[i][j].setSelected(true);
-					mat[i][j].setBackground(buttoncolor);
+					
+					mat[i][j].setBackground(getNextColor());
 					vive++;
 				}
 				else if ( mat[i][j].isSelected() &&( Adiacenze(old_mat,i,j)<2 || Adiacenze(old_mat,i,j)>3 ) )
@@ -495,7 +499,14 @@ public class GOFrame extends JFrame
 				}
 			}
 		}
-		periodo ++ ;
+		periodo ++ ;	
+		if(selectedcolor){
+			colorand = 0;
+			selectedcolor=false;
+		}
+		else{
+			colorand++;
+		}
 		task.setText(" vive: "+vive+"     morte: "+(dim*dim-vive)+"     periodo: "+periodo);
 	
 	
@@ -506,10 +517,10 @@ public class GOFrame extends JFrame
 		for(int i=0; i<dim; i++){
 			for(int j=0; j<dim; j++)
 			{
-				if(mat[i][j].isSelected() && !strplay.contains(note[i%note.length])){
+				if(mat[i][j].isSelected() ){//&& !strplay.contains(note[i%note.length])){
 
 				//	System.out.println(strplay+" <-strp  "+note[i%7]);
-					strplay= strplay + note[i%7]+j%10+ "q ";
+					strplay= strplay + note[i%7]+j%10+ "q+";
 					
 				}
 			}
@@ -527,7 +538,7 @@ public class GOFrame extends JFrame
 		if(!strplay.equals(startstr)){
 			len=strplay.length();
 			strplay=strplay.substring(0,len-1);
-			System.out.println("genf: "+strplay+"$");
+			//System.out.println("genf: "+strplay+"$");
 			PlaySound p = new PlaySound(strplay);
 			Thread t = new Thread(p);
 			
@@ -553,7 +564,17 @@ public class GOFrame extends JFrame
 		}
 	}
 	
-
+// 70B 70S %360H
+	public Color getNextColor(){
+		
+		
+		float[] hscolor= new float[3];
+		Color.RGBtoHSB(buttoncolor.getRed(), buttoncolor.getGreen(), buttoncolor.getBlue(), hscolor);
+		//System.out.println("colorand "+colorand+"   "+hscolor[0]);
+		return (Color.getHSBColor((((float)colorand%100)/100)+hscolor[0], 0.7F, 0.7F));
+	}
+	
+	
 	Player player = new Player();
 	
 	String[] note = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B"};

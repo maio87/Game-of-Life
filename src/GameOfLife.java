@@ -8,8 +8,10 @@ public class GameOfLife
 	public static void main(String[] args)
 	{
 		
-		GOFrame[] gof = new GOFrame[3];
-		for(int i = 0 ; i<3 ; i++){
+		int nmax = 1;
+		
+		GOFrame[] gof = new GOFrame[nmax];
+		for(int i = 0 ; i<nmax ; i++){
 			gof[i] = new GOFrame();
 			gof[i].setVisible(true);
 			gof[i].setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
